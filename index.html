@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark" style="--md-hue: 195; --md-sat: 100%; color-scheme: dark;"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>资源下载中心</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+    <style>
+        :root, [data-theme="light"] {
+            /* 莫奈主题基础变量 (由JS动态覆盖) */
+            --md-hue: 210;
+            --md-sat: 60%;
+            --md-sys-color-primary: hsl(var(--md-hue), var(--md-sat), 40%);
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: hsl(var(--md-hue), var(--md-sat), 92%);
+            --md-sys-color-on-primary-container: hsl(var(--md-hue), var(--md-sat), 15%);
+            --md-sys-color-background: hsl(var(--md-hue), 25%, 98%);
+            --md-sys-color-surface: hsl(var(--md-hue), 20%, 94%);
+            --md-sys-color-surface-variant: #ffffff;
+            --md-sys-color-on-surface: #1a1c1e;
+            --md-sys-color-outline: hsl(var(--md-hue), 12%, 86%);
+            
+            /* 警告/声明专用色 */
+            --md-sys-color-error-container: #ffeede;
+            --md-sys-color-on-error-container: #8a3c00;
+            --md-sys-color-error-border: #ffdbc0;
+
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+            --border-radius-sm: 10px;
+            --transition-speed: 0.25s;
+        }
+
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --md-sys-color-primary: hsl(var(--md-hue), var(--md-sat), 75%);
+            --md-sys-color-on-primary: hsl(var(--md-hue), var(--md-sat), 20%);
+            --md-sys-color-primary-container: hsl(var(--md-hue), var(--md-sat), 22%);
+            --md-sys-color-on-primary-container: hsl(var(--md-hue), var(--md-sat), 90%);
+            --md-sys-color-background: hsl(var(--md-hue), 15%, 10%);
+            --md-sys-color-surface: hsl(var(--md-hue), 12%, 15%);
+            --md-sys-color-surface-variant: hsl(var(--md-hue), 10%, 18%);
+            --md-sys-color-on-surface: #e2e2e6;
+            --md-sys-color-outline: hsl(var(--md-hue), 10%, 26%);
+
+            --md-sys-color-error-container: #2c1a0e;
+            --md-sys-color-on-error-container: #ffb784;
+            --md-sys-color-error-border: #4d2b12;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-surface);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        /* AList 风格头部导航 */
+        header {
+            background-color: var(--md-sys-color-surface-variant);
+            padding: 14px 24px;
+            position: sticky; top: 0; z-index: 10;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .header-title { font-size: 18px; font-weight: 600; }
+
+        /* 面包屑路径导航 */
+        .breadcrumb-container {
+            max-width: 900px; margin: 16px auto 0; padding: 0 16px;
+            display: flex; align-items: center; gap: 4px; font-size: 14px; flex-wrap: wrap;
+        }
+        .breadcrumb-item {
+            cursor: pointer; display: flex; align-items: center; gap: 4px; opacity: 0.7; transition: opacity 0.2s;
+        }
+        .breadcrumb-item:hover { opacity: 1; color: var(--md-sys-color-primary); }
+        .breadcrumb-item.active { opacity: 1; pointer-events: none; font-weight: 500; }
+        .breadcrumb-separator { opacity: 0.4; font-size: 16px; }
+
+        /* 工具栏：搜索与排序架构 */
+        .toolbar-container {
+            max-width: 900px; margin: 12px auto 0; padding: 0 16px;
+            display: flex; gap: 12px; align-items: center; justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .search-wrapper {
+            position: relative; flex: 1; min-width: 200px; display: flex; align-items: center;
+        }
+        .search-wrapper .search-icon {
+            position: absolute; left: 16px; opacity: 0.6; font-size: 20px; pointer-events: none;
+            color: var(--md-sys-color-on-surface); z-index: 2;
+        }
+        /* 深度修复重合逻辑 */
+        .search-wrapper input.search-input-field {
+            padding: 11px 16px 11px 48px !important; 
+            border-radius: 100px;
+            font-size: 14px;
+        }
+        .sort-wrapper {
+            display: flex; align-items: center; gap: 6px; background-color: var(--md-sys-color-surface-variant);
+            border: 1px solid var(--md-sys-color-outline); border-radius: 100px; padding: 0 14px;
+            height: 42px; transition: opacity var(--transition-speed);
+        }
+        .sort-wrapper select {
+            border: none; background: transparent; padding: 0; width: auto; font-size: 13px; cursor: pointer; height: 100%;
+            color: var(--md-sys-color-on-surface);
+        }
+        .sort-wrapper select:focus { outline: none; }
+
+        /* 主体网盘列表区 */
+        main { padding: 12px 16px 32px; max-width: 900px; margin: 0 auto; }
+        
+        /* 文件夹/文件区块卡片 */
+        .explorer-block {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--md-sys-color-outline);
+            overflow: hidden;
+            animation: fadeIn 0.25s ease;
+        }
+        .explorer-gap { height: 16px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* AList 列表项样式 */
+        .explorer-item {
+            display: flex; align-items: center; padding: 14px 16px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            cursor: pointer; transition: background-color 0.15s;
+        }
+        .explorer-item:last-child { border-bottom: none; }
+        .explorer-item:hover { background-color: var(--md-sys-color-primary-container); }
+        
+        .item-icon {
+            font-size: 24px; margin-right: 14px; display: flex; align-items: center; justify-content: center;
+        }
+        .item-icon.folder { color: #ffb74d; }
+        [data-theme="dark"] .item-icon.folder { color: #ffa726; }
+        .item-icon.file { color: var(--md-sys-color-primary); }
+        .item-icon.back { color: var(--md-sys-color-outline); }
+
+        .item-name { font-size: 15px; font-weight: 400; flex: 1; word-break: break-all; }
+        .item-date { font-size: 12px; opacity: 0.4; margin-left: 8px; font-variant-numeric: tabular-nums; }
+
+        /* 模态框通用架构 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(6px);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity var(--transition-speed);
+            z-index: 100; padding: 20px;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            background-color: var(--md-sys-color-surface-variant);
+            width: 100%; max-width: 520px;
+            border-radius: var(--border-radius-lg);
+            padding: 28px; transform: scale(0.94);
+            transition: transform var(--transition-speed);
+            max-height: 85vh; overflow-y: auto; user-select: text;
+            border: 1px solid var(--md-sys-color-outline);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        
+        .modal-title { font-size: 20px; font-weight: 600; margin-bottom: 6px; color: var(--md-sys-color-on-surface); }
+        .modal-desc { margin-bottom: 24px; line-height: 1.6; color: var(--md-sys-color-on-surface); opacity: 0.8; font-size: 14px; }
+        
+        /* 现代高级关于弹窗深度重构 */
+        .about-header-art {
+            background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-surface));
+            margin: -28px -28px 20px -28px; padding: 32px 28px;
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+            display: flex; align-items: center; gap: 16px; color: var(--md-sys-color-on-primary);
+        }
+        .about-logo-icon {
+            width: 48px; height: 48px; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;
+        }
+        .about-meta-block {
+            margin-bottom: 16px; background-color: var(--md-sys-color-surface); 
+            padding: 16px; border-radius: var(--border-radius-md); 
+            border: 1px solid var(--md-sys-color-outline);
+        }
+        .about-meta-block h4 { 
+            font-size: 14px; font-weight: 600; margin-bottom: 8px; 
+            display: flex; align-items: center; gap: 8px; color: var(--md-sys-color-primary); 
+        }
+        .about-meta-block p { font-size: 13.5px; line-height: 1.6; opacity: 0.85; white-space: pre-wrap; }
+        
+        /* 特效声明区块 */
+        .about-meta-block.danger-zone {
+            background-color: var(--md-sys-color-error-container);
+            border-color: var(--md-sys-color-error-border);
+            color: var(--md-sys-color-on-error-container);
+        }
+        .about-meta-block.danger-zone h4 { color: var(--md-sys-color-on-error-container); }
+        
+        /* 极客徽章联系模块 */
+        .contact-badge-container { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+        .contact-badge {
+            display: flex; align-items: center; gap: 8px; padding: 8px 12px; 
+            background: var(--md-sys-color-surface-variant); border-radius: var(--border-radius-sm);
+            font-family: monospace; font-size: 12.5px; border: 1px solid var(--md-sys-color-outline);
+        }
+
+        /* 按钮系统 */
+        .btn {
+            padding: 10px 20px; border-radius: 100px; border: none; font-weight: 500; font-size: 14px;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+        .btn:active { opacity: 0.85; }
+        .btn-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-tonal { background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); }
+        .btn-tonal:hover { background-color: var(--md-sys-color-primary-container); }
+        .btn-danger { background-color: #ba1a1a; color: #ffffff; }
+        [data-theme="dark"] .btn-danger { background-color: #ffb4ab; color: #690005; }
+        
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+        /* 悬浮设置按钮 FAB */
+        .fab {
+            position: fixed; right: 24px; bottom: 24px; width: 52px; height: 52px; border-radius: 16px;
+            background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);
+            display: none; justify-content: center; align-items: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15); cursor: pointer; z-index: 50;
+        }
+
+        /* 设置表单深层重构 */
+        .settings-section { margin-bottom: 24px; }
+        .settings-section h3 { 
+            font-size: 15px; font-weight: 600; margin-bottom: 14px; opacity: 0.9; 
+            border-left: 4px solid var(--md-sys-color-primary); padding-left: 10px; 
+        }
+        .form-group { margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; gap: 10px; }
+        
+        select, input[type="text"], input[type="color"], textarea {
+            width: 100%; padding: 11px 14px; background-color: var(--md-sys-color-surface);
+            border: 1px solid var(--md-sys-color-outline); border-radius: var(--border-radius-sm);
+            color: var(--md-sys-color-on-surface); font-family: inherit; font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        select:focus, input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--md-sys-color-primary); }
+        input[type="color"] { width: 56px; height: 38px; padding: 2px; cursor: pointer; border-radius: 8px; }
+        
+        /* 聚合分类文件管理器样式 */
+        .settings-category-accordion {
+            border: 1px solid var(--md-sys-color-outline); border-radius: var(--border-radius-md);
+            margin-bottom: 12px; overflow: hidden; background: var(--md-sys-color-surface-variant);
+        }
+        .accordion-header {
+            background-color: var(--md-sys-color-surface); padding: 12px 16px;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+            font-weight: 500; font-size: 14px; user-select: none;
+        }
+        .accordion-header:hover { background-color: var(--md-sys-color-primary-container); }
+        .accordion-title-box { display: flex; align-items: center; gap: 8px; }
+        .accordion-arrow { transition: transform var(--transition-speed); opacity: 0.5; }
+        .settings-category-accordion.active .accordion-arrow { transform: rotate(18px); }
+        .accordion-content { display: none; padding: 12px; background: var(--md-sys-color-background); border-top: 1px solid var(--md-sys-color-outline); }
+        .settings-category-accordion.active .accordion-content { display: block; }
+
+        .edit-item-card {
+            background-color: var(--md-sys-color-surface-variant); padding: 14px; border-radius: var(--border-radius-sm);
+            margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--md-sys-color-outline);
+            position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .edit-item-card:last-child { margin-bottom: 0; }
+        .edit-card-row { display: flex; gap: 10px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <script id="app-data-store" type="application/json">
+{
+    "theme": {
+        "mode": "auto",
+        "color": "#006688"
+    },
+    "about": {
+        "intro": "基于GitHub的文件索引。",
+        "disclaimer": "本站分发的所有程序及模块镜像均来自于全球开源技术社区或公开网络。资源仅用作沙盒合规性评估、交叉编译与技术逆向逻辑验证。请于获取后24 小时内彻底移除。因违规测试产生的连带技术壁垒与法律责任均由部署或下载者自行挂钩，与平台架构无关。",
+        "contact": "开发者主页: https://clcwpwqi.github.io\nGitHub 库: https://github.com/clcwpwqi\nEmail：clcpwqi@outlook.com"
+    },
+    "files": [
+        {
+            "id": "1782726533235",
+            "category": "实用工具",
+            "date": "2026-06-29",
+            "name": "block_list.rule",
+            "url": "https://github.com/clcwpwqi/download/blob/main/block_list.rule",
+            "desc": "域名拦截列表"
+        },
+        {
+            "id": "1782726510712",
+            "category": "休闲娱乐",
+            "date": "2026-06-29",
+            "name": "MC皮肤.zip",
+            "url": "https://github.com/clcwpwqi/download/raw/refs/heads/main/%E8%A7%92%E8%89%B2%E7%9A%AE%E8%82%A4%E6%96%87%E4%BB%B6.zip",
+            "desc": "基岩版MC原神皮肤集合"
+        },
+        {
+            "id": "1782726427838",
+            "category": "刷机工具",
+            "date": "2026-06-29",
+            "name": "a16_6.6.77_ak3.zip",
+            "url": "https://github.com/clcwpwqi/download/raw/refs/heads/main/0624android15-6.6.77-2025-03-AnyKernel3.zip",
+            "desc": "基于gki2.0，安卓16，6.6.77的内核刷机包，集成了susfs2.0.0和resukisu"
+        },
+        {
+            "id": "1782726369932",
+            "category": "休闲娱乐",
+            "date": "2026-06-29",
+            "name": "MCBEunlock.exe",
+            "url": "https://github.com/clcwpwqi/download/raw/refs/heads/main/6.2.0_MCBEUnlock++(%E5%8F%AF%E8%83%BD%E8%A6%81%E8%BF%90%E8%A1%8C%E5%BA%93%EF%BC%81).exe",
+            "desc": "解除MC基岩版正版验证，支持1.26 Win10版"
+        },
+        {
+            "id": "1782726338598",
+            "category": "休闲娱乐",
+            "date": "2026-06-29",
+            "name": "starfall.html",
+            "url": "https://raw.githubusercontent.com/clcwpwqi/StarFall/refs/heads/main/600F.html",
+            "desc": "基于h5的大世界探索游戏"
+        },
+        {
+            "id": "1",
+            "category": "Magisk模块",
+            "date": "2026-02-15",
+            "name": "Magisk_Module_CMS2026.zip",
+            "url": "https://github.com/clcwpwqi/CMS-2026-Magisk/releases/download/v1.0.0/CMS-2026-Magisk-v1.0.0.zip",
+            "desc": "基于CMS-2026加密算法编写的命令行系统级修改模块。"
+        },
+        {
+            "id": "2",
+            "category": "Magisk模块",
+            "date": "2026-03-22",
+            "name": "LSPosed_Framework_v2.1.0.zip",
+            "url": "https://lsposed.zip/",
+            "desc": "用于系统Hook的现代Xposed实现框架，完美支持Android 16。"
+        }
+    ]
+}
+    </script>
+
+    <header>
+        <div class="header-title">资源下载中心</div>
+        <button class="btn btn-tonal" style="padding: 6px 14px; font-size: 13px; border-radius: 10px;" onclick="openAboutModal()">
+            <span class="material-symbols-rounded" style="font-size:18px;">info</span>关于
+        </button>
+    </header>
+
+    <div class="breadcrumb-container" id="breadcrumb-box"></div>
+
+    <div class="toolbar-container">
+        <div class="search-wrapper">
+            <span class="material-symbols-rounded search-icon">search</span>
+            <input type="text" id="search-input" class="search-input-field" placeholder="搜索当前层级文件名或详述..." oninput="renderExplorer()">
+        </div>
+        <div class="sort-wrapper" id="sort-filter-box" style="opacity: 0.3; pointer-events: none;">
+            <span class="material-symbols-rounded" style="font-size: 18px; opacity: 0.7;">sort</span>
+            <select id="sort-select" onchange="renderExplorer()">
+                <option value="az">名称 A-Z</option>
+                <option value="time-desc">时间降序 (最新)</option>
+                <option value="time-asc">时间升序 (最早)</option>
+            </select>
+        </div>
+    </div>
+
+    <main>
+        <div id="explorer-box"></div>
+    </main>
+
+    <div id="about-modal" class="modal-overlay" onclick="closeModal('about-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="about-header-art">
+                <div class="about-logo-icon">
+                    <span class="material-symbols-rounded" style="font-size: 28px;">cloud_download</span>
+                </div>
+                <div>
+                    <h3 style="font-size:18px; font-weight:600;">资源分发阵列</h3>
+                    <p style="font-size:12px; opacity:0.8;">v2.5.0 Modern Monet Mode</p>
+                </div>
+            </div>
+            
+            <div class="about-meta-block">
+                <h4><span class="material-symbols-rounded" style="font-size:16px;">widgets</span>项目简介</h4>
+                <p id="about-txt-intro"></p>
+            </div>
+            
+            <div class="about-meta-block danger-zone">
+                <h4><span class="material-symbols-rounded" style="font-size:16px;">gavel</span>免责声明</h4>
+                <p id="about-txt-disclaimer"></p>
+            </div>
+            
+            <div class="about-meta-block" style="margin-bottom:0;">
+                <h4><span class="material-symbols-rounded" style="font-size:16px;">alternate_email</span>联系通道</h4>
+                <div class="contact-badge-container" id="about-badge-box"></div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-primary" style="min-width:90px;" onclick="closeModal('about-modal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="file-modal" class="modal-overlay" onclick="closeModal('file-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 id="modal-title" class="modal-title">未命名文件</h2>
+            <div id="modal-category" style="font-size: 13px; color: var(--md-sys-color-primary); margin-bottom: 14px; font-weight:500;"></div>
+            <div id="modal-desc" class="modal-desc">无描述...</div>
+            <div class="modal-actions">
+                <button class="btn btn-tonal" onclick="closeModal('file-modal')">取消</button>
+                <button class="btn btn-primary" id="modal-download-btn"><span class="material-symbols-rounded" style="font-size: 18px;">download</span>高速下载</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-fab" class="fab" onclick="openSettings()" style="display: none;">
+        <span class="material-symbols-rounded">settings</span>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay" onclick="closeSettings()">
+        <div class="modal-content" style="max-width: 580px;" onclick="event.stopPropagation()">
+            <h2 class="modal-title" style="margin-bottom: 18px;">系统控制台</h2>
+            
+            <div class="settings-section">
+                <h3>全局外观 (莫奈动态引擎)</h3>
+                <div class="form-group">
+                    <span>系统色彩主题</span>
+                    <select id="theme-mode" style="width: 160px;">
+                        <option value="auto">跟随系统方案</option>
+                        <option value="light">强制浅色模式</option>
+                        <option value="dark">强制深色模式</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <span>莫奈取色基准</span>
+                    <input type="color" id="theme-color">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>关于页客制化配置</h3>
+                <div class="form-group" style="flex-direction: column; align-items: flex-start; gap:4px;">
+                    <span style="font-size:13px; opacity:0.7;">阵列简介文本</span>
+                    <textarea id="set-about-intro" rows="2"></textarea>
+                </div>
+                <div class="form-group" style="flex-direction: column; align-items: flex-start; gap:4px;">
+                    <span style="font-size:13px; opacity:0.7;">免责隔离声明</span>
+                    <textarea id="set-about-disclaimer" rows="2"></textarea>
+                </div>
+                <div class="form-group" style="flex-direction: column; align-items: flex-start; gap:4px;">
+                    <span style="font-size:13px; opacity:0.7;">多行社交矩阵 (一行一条)</span>
+                    <textarea id="set-about-contact" rows="2" placeholder="例如: GitHub: https://..."></textarea>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                    <h3>矩阵资源树管理</h3>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-tonal" style="padding: 5px 10px; font-size: 11px; border-radius: 6px;" onclick="toggleAllAccordions(true)">全部展开</button>
+                        <button class="btn btn-tonal" style="padding: 5px 10px; font-size: 11px; border-radius: 6px;" onclick="toggleAllAccordions(false)">全部折叠</button>
+                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px; border-radius: 6px;" onclick="addNewItemRaw()"><span class="material-symbols-rounded" style="font-size:14px;">add</span>独立新项</button>
+                    </div>
+                </div>
+                <div id="settings-accordion-container" style="max-height: 280px; overflow-y: auto; padding-right: 2px;">
+                    <div class="settings-category-accordion" id="accordion-group-0">
+                        <div class="accordion-header" onclick="toggleAccordion(0)">
+                            <div class="accordion-title-box">
+                                <span class="material-symbols-rounded text-icon" style="color:var(--md-sys-color-primary); font-size:18px;">folder_open</span>
+                                <span>实用工具 <small style="opacity:0.5; font-weight:400; margin-left:4px;">(1个文件)</small></span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <button class="btn btn-tonal" style="padding:4px 8px; font-size:11px; border-radius:4px;" onclick="event.stopPropagation(); addNewItemInCat('实用工具')">加到此分类</button>
+                                <span class="material-symbols-rounded accordion-arrow">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="accordion-content">
+                
+                        <div class="edit-item-card" data-raw-index="0">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="实用工具" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="2026-06-29" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="block_list.rule" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="https://github.com/clcwpwqi/download/blob/main/block_list.rule" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">域名拦截列表</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(0)">删除此文件</button>
+                            </div>
+                        </div>
+                    </div></div>
+                    <div class="settings-category-accordion" id="accordion-group-1">
+                        <div class="accordion-header" onclick="toggleAccordion(1)">
+                            <div class="accordion-title-box">
+                                <span class="material-symbols-rounded text-icon" style="color:var(--md-sys-color-primary); font-size:18px;">folder_open</span>
+                                <span>休闲娱乐 <small style="opacity:0.5; font-weight:400; margin-left:4px;">(3个文件)</small></span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <button class="btn btn-tonal" style="padding:4px 8px; font-size:11px; border-radius:4px;" onclick="event.stopPropagation(); addNewItemInCat('休闲娱乐')">加到此分类</button>
+                                <span class="material-symbols-rounded accordion-arrow">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="accordion-content">
+                
+                        <div class="edit-item-card" data-raw-index="1">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="休闲娱乐" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="2026-06-29" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="MC皮肤.zip" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="https://github.com/clcwpwqi/download/raw/refs/heads/main/%E8%A7%92%E8%89%B2%E7%9A%AE%E8%82%A4%E6%96%87%E4%BB%B6.zip" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">基岩版MC原神皮肤集合</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(1)">删除此文件</button>
+                            </div>
+                        </div>
+                    
+                        <div class="edit-item-card" data-raw-index="3">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="休闲娱乐" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="2026-06-29" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="MCBEunlock.exe" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="https://github.com/clcwpwqi/download/raw/refs/heads/main/6.2.0_MCBEUnlock++(%E5%8F%AF%E8%83%BD%E8%A6%81%E8%BF%90%E8%A1%8C%E5%BA%93%EF%BC%81).exe" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">解除MC基岩版正版验证，支持1.26 Win10版</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(3)">删除此文件</button>
+                            </div>
+                        </div>
+                    
+                        <div class="edit-item-card" data-raw-index="4">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="休闲娱乐" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="2026-06-29" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="starfall.html" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="https://raw.githubusercontent.com/clcwpwqi/StarFall/refs/heads/main/600F.html" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">基于h5的大世界探索游戏</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(4)">删除此文件</button>
+                            </div>
+                        </div>
+                    </div></div>
+                    <div class="settings-category-accordion" id="accordion-group-2">
+                        <div class="accordion-header" onclick="toggleAccordion(2)">
+                            <div class="accordion-title-box">
+                                <span class="material-symbols-rounded text-icon" style="color:var(--md-sys-color-primary); font-size:18px;">folder_open</span>
+                                <span>刷机工具 <small style="opacity:0.5; font-weight:400; margin-left:4px;">(1个文件)</small></span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <button class="btn btn-tonal" style="padding:4px 8px; font-size:11px; border-radius:4px;" onclick="event.stopPropagation(); addNewItemInCat('刷机工具')">加到此分类</button>
+                                <span class="material-symbols-rounded accordion-arrow">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="accordion-content">
+                
+                        <div class="edit-item-card" data-raw-index="2">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="刷机工具" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="2026-06-29" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="a16_6.6.77_ak3.zip" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="https://github.com/clcwpwqi/download/raw/refs/heads/main/0624android15-6.6.77-2025-03-AnyKernel3.zip" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">基于gki2.0，安卓16，6.6.77的内核刷机包，集成了susfs2.0.0和resukisu</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(2)">删除此文件</button>
+                            </div>
+                        </div>
+                    </div></div>
+                    <div class="settings-category-accordion" id="accordion-group-3">
+                        <div class="accordion-header" onclick="toggleAccordion(3)">
+                            <div class="accordion-title-box">
+                                <span class="material-symbols-rounded text-icon" style="color:var(--md-sys-color-primary); font-size:18px;">folder_open</span>
+                                <span>Magisk模块 <small style="opacity:0.5; font-weight:400; margin-left:4px;">(2个文件)</small></span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <button class="btn btn-tonal" style="padding:4px 8px; font-size:11px; border-radius:4px;" onclick="event.stopPropagation(); addNewItemInCat('Magisk模块')">加到此分类</button>
+                                <span class="material-symbols-rounded accordion-arrow">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="accordion-content">
+                
+                        <div class="edit-item-card" data-raw-index="5">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="Magisk模块" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="2026-02-15" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="Magisk_Module_CMS2026.zip" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="https://github.com/clcwpwqi/CMS-2026-Magisk/releases/download/v1.0.0/CMS-2026-Magisk-v1.0.0.zip" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">基于CMS-2026加密算法编写的命令行系统级修改模块。</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(5)">删除此文件</button>
+                            </div>
+                        </div>
+                    
+                        <div class="edit-item-card" data-raw-index="6">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="Magisk模块" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="2026-03-22" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="LSPosed_Framework_v2.1.0.zip" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="https://lsposed.zip/" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">用于系统Hook的现代Xposed实现框架，完美支持Android 16。</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(6)">删除此文件</button>
+                            </div>
+                        </div>
+                    </div></div></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-tonal" onclick="saveSettings('direct')">热更新缓存</button>
+                <button class="btn btn-primary" onclick="saveSettings('local')"><span class="material-symbols-rounded" style="font-size:18px;">save_as</span>硬编码纯净导出</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 核心运行时状态单例 ---
+        let appState = { theme: {}, about: {}, files: [] };
+        let currentFolder = null; 
+        
+        // --- 经典扩展名映射图标池 ---
+        function getFileIcon(fileName) {
+            if (!fileName || !fileName.includes('.')) return 'description';
+            const ext = fileName.split('.').pop().toLowerCase();
+            const iconMap = {
+                'zip': 'folder_zip', 'rar': 'folder_zip', '7z': 'folder_zip', 'tar': 'folder_zip', 'gz': 'folder_zip',
+                'apk': 'android', 'apks': 'android', 'xapk': 'android',
+                'pdf': 'picture_as_pdf', 'txt': 'article', 'md': 'article',
+                'doc': 'description', 'docx': 'description', 'xls': 'table_chart', 'xlsx': 'table_chart',
+                'html': 'code', 'js': 'code', 'css': 'code', 'json': 'code', 'sh': 'terminal',
+                'png': 'image', 'jpg': 'image', 'jpeg': 'image', 'gif': 'image', 'webp': 'image',
+                'mp4': 'movie', 'mkv': 'movie', 'mp3': 'music_note', 'flac': 'music_note'
+            };
+            return iconMap[ext] || 'description';
+        }
+
+        // --- 深度色彩与深浅渲染修复架构 ---
+        function applyMonetTheme(hex, mode) {
+            let r = parseInt(hex.slice(1,3), 16) / 255;
+            let g = parseInt(hex.slice(3,5), 16) / 255;
+            let b = parseInt(hex.slice(5,7), 16) / 255;
+            let max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if(max === min) { h = s = 0; } 
+            else {
+                let d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch(max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            
+            const root = document.documentElement;
+            root.style.setProperty('--md-hue', Math.round(h * 360));
+            root.style.setProperty('--md-sat', Math.round(s * 100) + '%');
+
+            // 彻底重组修复深浅色模式Bug逻辑
+            let activeTheme = mode;
+            if (mode === 'auto') {
+                activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            
+            root.setAttribute('data-theme', activeTheme);
+            root.style.colorScheme = activeTheme; // 强制引导系统及底层滚动条渲染色方案
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (appState.theme.mode === 'auto') applyMonetTheme(appState.theme.color, 'auto');
+        });
+
+        // --- 应用自展初始化流程 ---
+        function initApp() {
+            const localCache = localStorage.getItem('gh_download_index_data');
+            if (localCache) {
+                appState = JSON.parse(localCache);
+            } else {
+                appState = JSON.parse(document.getElementById('app-data-store').textContent);
+            }
+            
+            applyMonetTheme(appState.theme.color, appState.theme.mode);
+            
+            document.getElementById('theme-mode').value = appState.theme.mode;
+            document.getElementById('theme-color').value = appState.theme.color;
+            document.getElementById('set-about-intro').value = appState.about.intro || '';
+            document.getElementById('set-about-disclaimer').value = appState.about.disclaimer || '';
+            document.getElementById('set-about-contact').value = appState.about.contact || '';
+
+            renderExplorer();
+        }
+
+        // --- 网盘多维联动搜索引擎与解算阵列 ---
+        function renderExplorer() {
+            const explorerBox = document.getElementById('explorer-box');
+            const breadcrumbBox = document.getElementById('breadcrumb-box');
+            const searchKeyword = document.getElementById('search-input').value.trim().toLowerCase();
+            const sortFilterBox = document.getElementById('sort-filter-box');
+            explorerBox.innerHTML = '';
+
+            // 1. 面包屑渲染
+            let breadcrumbHTML = `<div class="breadcrumb-item ${currentFolder === null && !searchKeyword ? 'active' : ''}" onclick="clearSearchDir(null)"><span class="material-symbols-rounded" style="font-size:16px;">home</span>根目录</div>`;
+            if (currentFolder !== null) {
+                breadcrumbHTML += `<span class="material-symbols-rounded breadcrumb-separator">chevron_right</span>`;
+                const folderShowName = currentFolder === 'all' ? '全部文件' : currentFolder;
+                breadcrumbHTML += `<div class="breadcrumb-item ${!searchKeyword ? 'active' : ''}" onclick="clearSearchDir('${currentFolder}')">${folderShowName}</div>`;
+            }
+            if (searchKeyword) {
+                breadcrumbHTML += `<span class="material-symbols-rounded breadcrumb-separator">chevron_right</span>`;
+                breadcrumbHTML += `<div class="breadcrumb-item active" style="color:var(--md-sys-color-primary)">过滤: "${searchKeyword}"</div>`;
+            }
+            breadcrumbBox.innerHTML = breadcrumbHTML;
+
+            // 2. 检索域自动缩进对齐
+            let targetFilesPool = [];
+            if (currentFolder === null || currentFolder === 'all') {
+                targetFilesPool = [...appState.files];
+            } else {
+                targetFilesPool = appState.files.filter(f => f.category === currentFolder);
+            }
+
+            if (searchKeyword) {
+                targetFilesPool = targetFilesPool.filter(f => 
+                    f.name.toLowerCase().includes(searchKeyword) || 
+                    (f.desc && f.desc.toLowerCase().includes(searchKeyword))
+                );
+            }
+
+            // 3. 动态列表装载
+            if (currentFolder === null && !searchKeyword) {
+                sortFilterBox.style.opacity = '0.3';
+                sortFilterBox.style.pointerEvents = 'none';
+
+                let allFilesBlock = `
+                    <div class="explorer-block">
+                        <div class="explorer-item" onclick="changeDir('all')">
+                            <span class="material-symbols-rounded item-icon folder">folder</span>
+                            <div class="item-name" style="font-weight: 500;">全部文件</div>
+                            <span class="material-symbols-rounded" style="opacity:0.3; font-size:18px;">chevron_right</span>
+                        </div>
+                    </div>
+                `;
+
+                let categoriesHTML = '';
+                const categories = [...new Set(appState.files.map(f => f.category))].filter(Boolean);
+                if (categories.length > 0) {
+                    categoriesHTML += `<div class="explorer-gap"></div><div class="explorer-block">`;
+                    categories.forEach(cat => {
+                        categoriesHTML += `
+                            <div class="explorer-item" onclick="changeDir('${cat}')">
+                                <span class="material-symbols-rounded item-icon folder">folder</span>
+                                <div class="item-name">${cat}</div>
+                                <span class="material-symbols-rounded" style="opacity:0.3; font-size:18px;">chevron_right</span>
+                            </div>
+                        `;
+                    });
+                    categoriesHTML += `</div>`;
+                }
+                explorerBox.innerHTML = allFilesBlock + categoriesHTML;
+            } 
+            else {
+                sortFilterBox.style.opacity = '1';
+                sortFilterBox.style.pointerEvents = 'auto';
+
+                let itemsHTML = `<div class="explorer-block">`;
+                if (!searchKeyword) {
+                    itemsHTML += `
+                        <div class="explorer-item" onclick="changeDir(null)">
+                            <span class="material-symbols-rounded item-icon back">reply</span>
+                            <div class="item-name" style="opacity: 0.6;">.. 返回上一级</div>
+                        </div>
+                    `;
+                }
+
+                const sortType = document.getElementById('sort-select').value;
+                if (sortType === 'az') {
+                    targetFilesPool.sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'accent' }));
+                } else if (sortType === 'time-desc') {
+                    targetFilesPool.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+                } else if (sortType === 'time-asc') {
+                    targetFilesPool.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+                }
+
+                if (targetFilesPool.length === 0) {
+                    itemsHTML += `
+                        <div class="explorer-item" style="pointer-events:none; justify-content:center; padding: 36px; opacity:0.4; font-size:14px;">
+                            无匹配结果
+                        </div>
+                    `;
+                } else {
+                    targetFilesPool.forEach(f => {
+                        const iconName = getFileIcon(f.name);
+                        itemsHTML += `
+                            <div class="explorer-item" onclick="openFileModal('${f.id}')">
+                                <span class="material-symbols-rounded item-icon file">${iconName}</span>
+                                <div class="item-name">${f.name}</div>
+                                <span class="item-date">${f.date || '--'}</span>
+                            </div>
+                        `;
+                    });
+                }
+                itemsHTML += `</div>`;
+                explorerBox.innerHTML = itemsHTML;
+            }
+        }
+
+        function changeDir(dir) { currentFolder = dir; renderExplorer(); }
+        function clearSearchDir(dir) { document.getElementById('search-input').value = ''; currentFolder = dir; renderExplorer(); }
+
+        // --- 现代化关于本站数据转换渲染 ---
+        function openAboutModal() {
+            document.getElementById('about-txt-intro').textContent = appState.about.intro || '暂无数据';
+            document.getElementById('about-txt-disclaimer').textContent = appState.about.disclaimer || '暂无数据';
+            
+            const badgeBox = document.getElementById('about-badge-box');
+            badgeBox.innerHTML = '';
+            const contacts = (appState.about.contact || '').split('\n').filter(Boolean);
+            if(contacts.length === 0) {
+                badgeBox.innerHTML = `<div style="opacity:0.5; font-size:13px;">未配置联系通道</div>`;
+            } else {
+                contacts.forEach(c => {
+                    badgeBox.innerHTML += `<div class="contact-badge"><span class="material-symbols-rounded" style="font-size:15px; color:var(--md-sys-color-primary);">hub</span>${c}</div>`;
+                });
+            }
+            
+            document.getElementById('about-modal').classList.add('active');
+        }
+
+        function openFileModal(id) {
+            const file = appState.files.find(f => f.id === id);
+            if (!file) return;
+            document.getElementById('modal-title').textContent = file.name;
+            document.getElementById('modal-category').textContent = `分类: ${file.category}`;
+            document.getElementById('modal-desc').textContent = file.desc || '上架人暂未对该资源编写扩展评估说明报告。';
+            document.getElementById('modal-download-btn').onclick = () => window.open(file.url, '_blank');
+            document.getElementById('file-modal').classList.add('active');
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // --- 后台快捷键唤醒机制 (两秒内任意空白处快速双击 3 次) ---
+        let dblClickCount = 0;
+        let dblClickTimer;
+        document.body.addEventListener('dblclick', (e) => {
+            if (e.target.closest('.modal-content') || e.target.closest('.fab') || e.target.closest('header') || e.target.closest('.toolbar-container')) return;
+            dblClickCount++;
+            clearTimeout(dblClickTimer);
+            if (dblClickCount >= 3) {
+                document.getElementById('settings-fab').style.display = 'flex';
+                dblClickCount = 0;
+            } else { dblClickTimer = setTimeout(() => { dblClickCount = 0; }, 2000); }
+        });
+
+        // --- 后台文件管理分门别类高阶渲染层 ---
+        function openSettings() {
+            renderAccordionControl();
+            document.getElementById('settings-modal').classList.add('active');
+        }
+
+        function closeSettings() {
+            closeModal('settings-modal');
+            document.getElementById('settings-fab').style.display = 'none';
+            initApp(); 
+        }
+
+        document.getElementById('theme-color').addEventListener('input', (e) => applyMonetTheme(e.target.value, document.getElementById('theme-mode').value));
+        document.getElementById('theme-mode').addEventListener('change', (e) => applyMonetTheme(document.getElementById('theme-color').value, e.target.value));
+
+        // 核心优化：按分类聚合渲染折叠式文件树
+        function renderAccordionControl() {
+            const container = document.getElementById('settings-accordion-container');
+            container.innerHTML = '';
+            
+            // 提取现有分类字典
+            const categories = [...new Set(appState.files.map(f => f.category || '未分类'))];
+            
+            if(categories.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:20px; opacity:0.5; font-size:13px;">资源树空空如也</div>`;
+                return;
+            }
+
+            categories.forEach((cat, catIdx) => {
+                const catFiles = appState.files.filter(f => (f.category || '未分类') === cat);
+                
+                let groupHTML = `
+                    <div class="settings-category-accordion" id="accordion-group-${catIdx}">
+                        <div class="accordion-header" onclick="toggleAccordion(${catIdx})">
+                            <div class="accordion-title-box">
+                                <span class="material-symbols-rounded text-icon" style="color:var(--md-sys-color-primary); font-size:18px;">folder_open</span>
+                                <span>${cat} <small style="opacity:0.5; font-weight:400; margin-left:4px;">(${catFiles.length}个文件)</small></span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <button class="btn btn-tonal" style="padding:4px 8px; font-size:11px; border-radius:4px;" onclick="event.stopPropagation(); addNewItemInCat('${cat}')">加到此分类</button>
+                                <span class="material-symbols-rounded accordion-arrow">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="accordion-content">
+                `;
+
+                catFiles.forEach(f => {
+                    // 全局寻址原文件的真实index位置用于精准解绑
+                    const originalIndex = appState.files.findIndex(rawFile => rawFile.id === f.id);
+                    groupHTML += `
+                        <div class="edit-item-card" data-raw-index="${originalIndex}">
+                            <div class="edit-card-row">
+                                <input type="text" placeholder="归属分类" value="${f.category}" class="node-cat-input" style="flex:1;">
+                                <input type="text" placeholder="更新时间 (YYYY-MM-DD)" value="${f.date || ''}" class="node-date-input" style="flex:1;">
+                            </div>
+                            <input type="text" placeholder="文件名(包含后缀)" value="${f.name}" class="node-name-input">
+                            <input type="text" placeholder="网络下载直链 URL" value="${f.url}" class="node-url-input">
+                            <textarea placeholder="输入文件简短描述简报内容..." rows="1" class="node-desc-input">${f.desc || ''}</textarea>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px; border-radius:4px;" onclick="deleteItemDirect(${originalIndex})">删除此文件</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                groupHTML += `</div></div>`;
+                container.innerHTML += groupHTML;
+            });
+        }
+
+        function toggleAccordion(idx) {
+            document.getElementById(`accordion-group-${idx}`).classList.toggle('active');
+        }
+
+        function toggleAllAccordions(isOpen) {
+            const elms = document.querySelectorAll('.settings-category-accordion');
+            elms.forEach(el => {
+                if(isOpen) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        }
+
+        function addNewItemInCat(catName) {
+            syncStateFromUI(); // 捕获编辑脏数据
+            const today = new Date().toISOString().split('T')[0];
+            appState.files.unshift({ id: Date.now().toString(), category: catName, name: "新建资源文件.zip", desc: "", url: "#", date: today });
+            renderAccordionControl();
+            // 自动展开以便于查看新添加的内容
+            const elms = document.querySelectorAll('.settings-category-accordion');
+            elms.forEach(el => {
+                if(el.innerHTML.includes(`value="${catName}"`)) el.classList.add('active');
+            });
+        }
+
+        function addNewItemRaw() {
+            syncStateFromUI();
+            const today = new Date().toISOString().split('T')[0];
+            appState.files.unshift({ id: Date.now().toString(), category: "未命名大分类", name: "未命名文件.zip", desc: "", url: "#", date: today });
+            renderAccordionControl();
+            document.querySelector('.settings-category-accordion')?.classList.add('active');
+        }
+
+        function deleteItemDirect(targetIdx) {
+            syncStateFromUI();
+            appState.files.splice(targetIdx, 1);
+            renderAccordionControl();
+        }
+
+        // 定时定量抓取DOM并推入全局单例
+        function syncStateFromUI() {
+            const cards = document.querySelectorAll('.edit-item-card');
+            const cacheMap = {};
+            cards.forEach(card => {
+                const rawIdx = card.getAttribute('data-raw-index');
+                cacheMap[rawIdx] = {
+                    category: card.querySelector('.node-cat-input').value,
+                    date: card.querySelector('.node-date-input').value,
+                    name: card.querySelector('.node-name-input').value,
+                    url: card.querySelector('.node-url-input').value,
+                    desc: card.querySelector('.node-desc-input').value
+                };
+            });
+
+            // 深度融合回流原数组
+            appState.files.forEach((file, index) => {
+                if(cacheMap[index]) {
+                    appState.files[index] = {
+                        id: file.id || Date.now().toString() + index,
+                        ...cacheMap[index]
+                    };
+                }
+            });
+        }
+
+        function saveSettings(type) {
+            syncStateFromUI();
+            
+            // 抓取并同步非卡片控制单元
+            appState.theme.mode = document.getElementById('theme-mode').value;
+            appState.theme.color = document.getElementById('theme-color').value;
+            appState.about.intro = document.getElementById('set-about-intro').value;
+            appState.about.disclaimer = document.getElementById('set-about-disclaimer').value;
+            appState.about.contact = document.getElementById('set-about-contact').value;
+
+            if (type === 'direct') {
+                localStorage.setItem('gh_download_index_data', JSON.stringify(appState));
+                renderExplorer();
+                closeSettings();
+                alert('系统策略参数已热推同步至浏览器环境缓存！');
+            } 
+            else if (type === 'local') {
+                document.getElementById('app-data-store').textContent = '\n' + JSON.stringify(appState, null, 4) + '\n    ';
+                
+                closeModal('settings-modal');
+                document.getElementById('settings-fab').style.display = 'none';
+                document.getElementById('search-input').value = '';
+                document.getElementById('explorer-box').innerHTML = '';
+                document.getElementById('breadcrumb-box').innerHTML = '';
+                
+                const htmlString = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+                const blob = new Blob([htmlString], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'index.html';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                localStorage.removeItem('gh_download_index_data');
+                currentFolder = null;
+                renderExplorer();
+            }
+        }
+
+        initApp();
+    </script>
+
+
+</body></html>
